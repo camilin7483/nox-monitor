@@ -1,0 +1,23 @@
+NOX MONITOR 1.0.0
+
+Primer inicio
+1. Abre el instalador y selecciona Abrir Nox Monitor al finalizar.
+   En la edición portable, extrae todo el archivo y abre «Nox Monitor».
+2. Escanea el QR en el navegador privado que se abre. En WhatsApp del
+   teléfono, ve a Dispositivos vinculados y selecciona Vincular dispositivo.
+3. En Modelos, elige Ollama o añade un proveedor con tu propia clave.
+   Prueba el modelo y actívalo. En Ajustes puedes elegir las conversaciones
+   a las que Nox puede responder automáticamente.
+
+Nox incluye Python y Node. Si no encuentra un navegador compatible, prepara
+Chromium en el primer inicio. El navegador y WhatsApp requieren Internet
+para la vinculación. Para IA, usa un servidor local o tu cuenta de un proveedor.
+
+La edición instalada guarda tu sesión aparte de los archivos del programa.
+La edición portable crea la carpeta «Datos» al lado del ejecutable para
+conservar tu sesión, tus modelos configurados y tu historial.
+Comparte el archivo portable original para entregar una copia limpia.
+
+Windows 10/11 de 64 bits y Linux de escritorio x86_64 con bibliotecas
+gráficas del sistema. En Linux, si el archivo .run se descargó sin permiso
+de ejecución, actívalo desde Propiedades o con chmod +x.

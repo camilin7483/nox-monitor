@@ -1,0 +1,17 @@
+{
+  "name": "nox-monitor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "bash start.sh",
+    "stop": "bash stop.sh",
+    "status": "bash status.sh",
+    "logs": "tail -f responder.log",
+    "check": "node --check responder.js",
+    "test": "node --test assistant.test.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "playwright": "^1.61.1"
+  }
+}

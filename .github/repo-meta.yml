@@ -1,0 +1,10 @@
+name: nox-monitor
+title: Nox Monitor
+description: Asistente de WhatsApp de escritorio con IA local o en la nube.
+topics:
+  - whatsapp-web
+  - local-ai
+  - ollama
+  - desktop-app
+  - playwright
+visibility: private
