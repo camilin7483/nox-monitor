@@ -577,7 +577,6 @@ class MonitorApp(AssistantPanels):
         self._config_model = tk.StringVar(value='qwen2.5:3b')
         self._config_lm_model = tk.StringVar(value='dolphin3.0-qwen2.5-1.5b')
         self._config_lm_url = tk.StringVar(value='http://127.0.0.1:1234/v1')
-        self._config_persona = tk.StringVar(value='sheldon')
         self._config_browser = tk.StringVar(value='bundled')
         self._load_config()
 
@@ -613,7 +612,7 @@ class MonitorApp(AssistantPanels):
             if js_max: self._config_max_reply.set(js_max.group(1))
             if js_cooldown: self._config_cooldown.set(js_cooldown.group(1))
             if js_poll: self._config_poll_ms.set(js_poll.group(1))
-            # Fuente única nueva: nox-config.json + .env (LM Studio / persona / browser)
+            # Fuente única nueva: nox-config.json + .env (LM Studio / navegador)
             cfg = read_nox_config()
             for key, variable in (('max_reply_length', self._config_max_reply),
                                   ('cooldown', self._config_cooldown), ('poll_ms', self._config_poll_ms)):
@@ -623,15 +622,12 @@ class MonitorApp(AssistantPanels):
             browser = cfg.get('browser', {}) if isinstance(cfg, dict) else {}
             if llm.get('model'): self._config_lm_model.set(str(llm['model']))
             if llm.get('baseUrl'): self._config_lm_url.set(str(llm['baseUrl']))
-            if cfg.get('persona'): self._config_persona.set(str(cfg['persona']).lower())
             if browser.get('provider'): self._config_browser.set(str(browser['provider']).lower())
             env_lm_model = load_env_value('LMSTUDIO_MODEL')
             env_lm_url = load_env_value('LMSTUDIO_URL')
-            env_persona = load_env_value('PERSONA')
             env_browser = load_env_value('BROWSER_PROVIDER')
             if env_lm_model: self._config_lm_model.set(env_lm_model)
             if env_lm_url: self._config_lm_url.set(env_lm_url)
-            if env_persona: self._config_persona.set(env_persona.lower())
             if env_browser: self._config_browser.set(env_browser.lower())
         except:
             pass
@@ -1005,7 +1001,7 @@ class MonitorApp(AssistantPanels):
         model_f = ttk.LabelFrame(tab, text='Selección automática y entorno', padding=8)
         model_f.grid(row=0, column=1, sticky='nsew', padx=3, pady=3)
         self._diag_model = {}
-        for i, key in enumerate(['provider', 'model', 'persona', 'browser', 'reachable', 'ping']):
+        for i, key in enumerate(['provider', 'model', 'browser', 'reachable', 'ping']):
             f = ttk.Frame(model_f)
             f.pack(fill=tk.X, pady=1)
             ttk.Label(f, text=key.replace('_', ' ').title() + ':', width=12, anchor=tk.E).pack(side=tk.LEFT)
@@ -1102,14 +1098,6 @@ class MonitorApp(AssistantPanels):
 
         row = ttk.Frame(mf)
         row.pack(fill=tk.X, pady=3)
-        ttk.Label(row, text='Personalidad', width=22, anchor=tk.E).pack(side=tk.LEFT, padx=(0, 6))
-        ttk.Radiobutton(row, text='sheldon', variable=self._config_persona,
-                        value='sheldon').pack(side=tk.LEFT, padx=2)
-        ttk.Radiobutton(row, text='nox', variable=self._config_persona,
-                        value='nox').pack(side=tk.LEFT, padx=2)
-
-        row = ttk.Frame(mf)
-        row.pack(fill=tk.X, pady=3)
         ttk.Label(row, text='Navegador', width=22, anchor=tk.E).pack(side=tk.LEFT, padx=(0, 6))
         ttk.Radiobutton(row, text='Chrome abierto', variable=self._config_browser,
                         value='cdp').pack(side=tk.LEFT, padx=2)
@@ -1184,7 +1172,6 @@ class MonitorApp(AssistantPanels):
             poll_ms = int(self._config_poll_ms.get())
             lm_model = self._config_lm_model.get().strip()
             lm_url = self._config_lm_url.get().strip()
-            persona = self._config_persona.get().strip().lower()
             browser = self._config_browser.get().strip().lower()
             if any(value <= 0 or value > 10_000_000 for value in (max_reply, cooldown, poll_ms)):
                 raise ValueError('Los valores numéricos deben estar entre 1 y 10.000.000.')
@@ -1195,8 +1182,6 @@ class MonitorApp(AssistantPanels):
             if (endpoint.scheme not in ('http', 'https') or endpoint.hostname not in ('127.0.0.1', 'localhost', '::1')
                     or endpoint.username is not None or endpoint.query or endpoint.fragment):
                 raise ValueError('LM Studio URL debe ser loopback 127.0.0.1/localhost')
-            if persona not in ('sheldon', 'nox'):
-                raise ValueError('Invalid persona')
             if browser not in ('cdp', 'bundled'):
                 raise ValueError('Invalid browser')
         except ValueError as ve:
@@ -1237,16 +1222,15 @@ class MonitorApp(AssistantPanels):
                 'temperature': 0.5,
             },
             'browser': {'provider': browser, 'cdpEndpoint': _existing_cfg.get('browser', {}).get('cdpEndpoint', 'http://127.0.0.1:9222')},
-            'persona': persona,
         })
         try:
-            self._update_env_kv({'LMSTUDIO_MODEL': lm_model, 'LMSTUDIO_URL': lm_url, 'PERSONA': persona, 'BROWSER_PROVIDER': browser})
+            self._update_env_kv({'LMSTUDIO_MODEL': lm_model, 'LMSTUDIO_URL': lm_url, 'BROWSER_PROVIDER': browser})
         except Exception as e:
             messagebox.showerror('Config', f'Failed to write .env: {e}')
             return
 
         self._add_session_event('config_change')
-        notify('Nox Monitor', f'Config applied: {lm_model} [{persona}/{browser}]')
+        notify('Nox Monitor', f'Config applied: {lm_model} [{browser}]')
         self._restart_bot()
 
     def _update_env_kv(self, kv):
@@ -1947,17 +1931,15 @@ class MonitorApp(AssistantPanels):
         except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired, ValueError):
             self._diag_sys['cpu_ram'].config(text='—')
 
-        # Fuente única: nox-config.json + .env (LM Studio / persona / browser)
+        # Fuente única: nox-config.json + .env (LM Studio / navegador)
         try:
             cfg = read_nox_config()
             llm = cfg.get('llm', {}) if isinstance(cfg, dict) else {}
             browser_cfg = cfg.get('browser', {}) if isinstance(cfg, dict) else {}
             model_name = llm.get('model') or (self._config_lm_model.get().strip() if hasattr(self, '_config_lm_model') else 'qwen2.5-coder-1.5b-unsensored-dpo')
-            persona_name = cfg.get('persona') or (self._config_persona.get().strip() if hasattr(self, '_config_persona') else 'sheldon')
             browser_name = browser_cfg.get('provider') or (self._config_browser.get().strip() if hasattr(self, '_config_browser') else 'cdp')
         except:
             model_name = 'qwen2.5-coder-1.5b-unsensored-dpo'
-            persona_name = 'sheldon'
             browser_name = 'cdp'
 
         model = profile['model'] if profile else model_name
@@ -1968,7 +1950,6 @@ class MonitorApp(AssistantPanels):
         self._diag_model['ping'].config(text=f"{probe['ms']} ms" if probe else '—')
         self._diag_model['provider'].config(text=profile['kind'] if profile else 'Automático (LM Studio primero)')
         self._diag_model['model'].config(text=model)
-        self._diag_model['persona'].config(text=persona_name)
         self._diag_model['browser'].config(text=browser_name + (' (mi Chrome)' if browser_name == 'cdp' else ''))
 
         total = self._gen_success + self._gen_errors

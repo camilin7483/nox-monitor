@@ -351,7 +351,6 @@ async function handleRequest(req, res) {
             provider: readDotEnv('BROWSER_PROVIDER') || nox.browser?.provider || 'cdp',
             cdpEndpoint: readDotEnv('BROWSER_CDP_ENDPOINT') || nox.browser?.cdpEndpoint || 'http://127.0.0.1:9222',
           },
-          persona: readDotEnv('PERSONA') || nox.persona || 'sheldon',
         });
         break;
       }

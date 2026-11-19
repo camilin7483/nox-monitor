@@ -10,7 +10,7 @@ import tarfile
 import zipfile
 
 SOURCE = Path(__file__).resolve().parent.parent
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 NODE_VERSION = 'v24.22.3'
 PYTHON_HASHES = {
     'linux': ('unknown-linux-gnu', 'f2d2199eb25880e07863b391cf7124e7ffa1338b0d65600dfcec117c4223a7fb'),

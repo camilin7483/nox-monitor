@@ -9,11 +9,11 @@ InstallDirRegKey HKCU "Software\NoxMonitor" "InstallDir"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 BrandingText "NOX MONITOR     /     ESCRITORIO"
-VIProductVersion "1.0.0.0"
+VIProductVersion "1.0.1.0"
 VIAddVersionKey "ProductName" "Nox Monitor"
 VIAddVersionKey "FileDescription" "Asistente de instalación de Nox Monitor"
-VIAddVersionKey "ProductVersion" "1.0.0"
-VIAddVersionKey "FileVersion" "1.0.0"
+VIAddVersionKey "ProductVersion" "1.0.1"
+VIAddVersionKey "FileVersion" "1.0.1"
 VIAddVersionKey "LegalCopyright" "Nox Monitor"
 
 !define MUI_ICON "${ART}/nox.ico"
@@ -62,7 +62,7 @@ Section "Aplicación" Main
   WriteRegStr HKCU "Software\NoxMonitor" "InstallDir" "$INSTDIR"
   CreateShortcut "$SMPROGRAMS\Nox Monitor.lnk" "$INSTDIR\Nox Monitor.exe"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\NoxMonitor" "DisplayName" "Nox Monitor"
-  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\NoxMonitor" "DisplayVersion" "1.0.0"
+  WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\NoxMonitor" "DisplayVersion" "1.0.1"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\NoxMonitor" "DisplayIcon" "$INSTDIR\Nox Monitor.exe"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\NoxMonitor" "InstallLocation" "$INSTDIR"
   WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\NoxMonitor" "UninstallString" '"$INSTDIR\Desinstalar.exe"'

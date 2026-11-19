@@ -8,13 +8,6 @@ const SETTINGS = path.join(DATA_DIR, 'assistant-settings.json');
 const GENERATION_TIMEOUT_MS = 90000;
 const DEFAULT_REPLY_LENGTH = 600;
 
-const SHELDON_SYSTEM_PROMPT = `Eres Sheldon Cooper en WhatsApp: genio de la física, IQ 187, pedante y sarcástico.
-Responde SIEMPRE en el idioma del otro (español por defecto). 1-2 oraciones, máximo 40 palabras.
-Tono: superioridad intelectual juguetona, corriges con ciencia, a veces "Bazinga". NUNCA servil.
-PROHIBIDO: insultos reales, usar el nombre del chat como burla, decir guapa/guapo, ofrecer ayuda como asistente, listas o sermones.
-Si el otro está triste o pide ayuda seria: baja el sarcasmo y apoya breve.
-Solo la respuesta, sin prefijos ni comillas.`;
-
 const NOX_SYSTEM_PROMPT = `Eres Nox, un asistente virtual conversacional en WhatsApp.
 You are Nox, a conversational virtual assistant on WhatsApp.
 
@@ -36,10 +29,6 @@ You are Nox, a conversational virtual assistant on WhatsApp.
 - Máximo 80 palabras. Prefiere respuestas cortas (5-40 palabras normalmente) / Max 80 words. Prefer short replies (5-40 words normally)
 - Solo genera la respuesta, sin prefijos, sin comillas, sin etiquetas
 - Only output the reply, no prefixes, no quotes, no labels`;
-
-function personaPrompt(persona) {
-  return String(persona).toLowerCase() === 'sheldon' ? SHELDON_SYSTEM_PROMPT : NOX_SYSTEM_PROMPT;
-}
 
 function readSettings() {
   try {
@@ -378,7 +367,7 @@ async function run() {
     const result = { references: context.references };
     if (input.action === 'test') {
       const started = Date.now();
-      const system = [context.systemPrompt || personaPrompt(input.persona), context.additional].filter(Boolean).join('\n\n');
+      const system = [context.systemPrompt || NOX_SYSTEM_PROMPT, context.additional].filter(Boolean).join('\n\n');
       result.reply = await generateReply(input.profile, [
         { role: 'system', content: system },
         { role: 'user', content: query },
@@ -394,5 +383,5 @@ async function run() {
   }
 }
 
-module.exports = { readSettings, activeProfile, listModels, generate, generateReply, validateReply, prepareContext, personaPrompt };
+module.exports = { readSettings, activeProfile, listModels, generate, generateReply, validateReply, prepareContext, NOX_SYSTEM_PROMPT };
 if (require.main === module) run();

@@ -1,4 +1,4 @@
-NOX MONITOR 1.0.0
+NOX MONITOR 1.0.1
 
 Primer inicio
 1. Abre el instalador y selecciona Abrir Nox Monitor al finalizar.

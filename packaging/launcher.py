@@ -42,7 +42,6 @@ def launch():
         cfg = json.loads(config_path.read_text(encoding='utf-8')) if config_path.exists() else {}
         if not cfg.get('api_token'):
             cfg.update(api_token=secrets.token_urlsafe(32))
-            cfg.setdefault('persona', 'nox')
             cfg.setdefault('browser', {'provider': 'bundled'})
             save_json(config_path, cfg)
 

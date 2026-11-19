@@ -467,7 +467,7 @@ class AssistantPanels:
         editors = ttk.Frame(body)
         editors.grid(row=0, column=0, sticky='nsew', padx=(0, 14))
         ttk.Label(editors, text='Prompt del sistema', style='Section.TLabel').pack(anchor='w')
-        ttk.Label(editors, text='Vacío = usa la personalidad elegida en Ajustes.', style='Muted.TLabel').pack(anchor='w', pady=(3, 6))
+        ttk.Label(editors, text='Déjalo vacío para usar las instrucciones predeterminadas de Nox.', style='Muted.TLabel').pack(anchor='w', pady=(3, 6))
         self._system_editor = ai_text(editors, 4)
         self._system_editor.pack(fill='both', expand=True, pady=(0, 10))
         ttk.Label(editors, text='Instrucciones permanentes', style='Section.TLabel').pack(anchor='w')
@@ -701,7 +701,7 @@ class AssistantPanels:
 
             self._run_ai({'action': action, 'query': query, 'settings': {
                 key: settings[key] for key in ('systemPrompt', 'instructions', 'sources')
-            }, 'profile': profile if action == 'test' else None, 'persona': self._config_persona.get(),
+            }, 'profile': profile if action == 'test' else None,
                 'maxLength': self._config_max_reply.get()}, done, 95)
 
         preview = ttk.Button(actions, text='Ver fuentes recuperadas', command=lambda: run('preview'))

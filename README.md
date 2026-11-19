@@ -2,7 +2,7 @@
   <img src="packaging/assets/nox.png" width="78" height="78" alt="">
   <h1>Nox Monitor</h1>
   <p>Tu asistente de WhatsApp, desde una app de escritorio.</p>
-  <p><strong>v1.0.0</strong> · Windows y Linux x64 · Instalador y portable</p>
+  <p><strong>v1.0.1</strong> · Windows y Linux x64 · Instalador y portable</p>
   <p><a href="https://github.com/camilin7483/nox-monitor/releases/latest"><strong>Descargar Nox Monitor</strong></a></p>
 </div>
 
@@ -16,10 +16,10 @@ Nox vincula WhatsApp Web en un perfil de navegador dedicado. Desde el monitor pu
 
 | Sistema | Instalador | Portable |
 | --- | --- | --- |
-| **Windows x64** | [Descargar .exe](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.0/Nox-Monitor-1.0.0-Windows-x64-Instalador.exe). Ábrelo y sigue el asistente. | [Descargar .zip](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.0/Nox-Monitor-1.0.0-Windows-x64-Portable.zip). Extrae la carpeta y abre `Nox Monitor.exe`. |
-| **Linux x64** | [Descargar .run](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.0/Nox-Monitor-1.0.0-Linux-x64-Instalador.run). Dale permiso de ejecución y ábrelo. | [Descargar .tar.gz](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.0/Nox-Monitor-1.0.0-Linux-x64-Portable.tar.gz). Extrae todo y abre `Nox Monitor`. |
+| **Windows x64** | [Descargar .exe](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.1/Nox-Monitor-1.0.1-Windows-x64-Instalador.exe). Ábrelo y sigue el asistente. | [Descargar .zip](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.1/Nox-Monitor-1.0.1-Windows-x64-Portable.zip). Extrae la carpeta y abre `Nox Monitor.exe`. |
+| **Linux x64** | [Descargar .run](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.1/Nox-Monitor-1.0.1-Linux-x64-Instalador.run). Dale permiso de ejecución y ábrelo. | [Descargar .tar.gz](https://github.com/camilin7483/nox-monitor/releases/download/v1.0.1/Nox-Monitor-1.0.1-Linux-x64-Portable.tar.gz). Extrae todo y abre `Nox Monitor`. |
 
-Los paquetes incluyen Node.js y Python. Nox usa un navegador compatible del equipo o prepara Chromium en el primer inicio. La versión portable crea su carpeta `Datos` al lado del ejecutable. Las sumas SHA-256 están en la [publicación de v1.0.0](https://github.com/camilin7483/nox-monitor/releases/tag/v1.0.0).
+Los paquetes incluyen Node.js y Python. Nox usa un navegador compatible del equipo o prepara Chromium en el primer inicio. La versión portable crea su carpeta `Datos` al lado del ejecutable. Las sumas SHA-256 están en la [publicación de v1.0.1](https://github.com/camilin7483/nox-monitor/releases/tag/v1.0.1).
 
 1. Abre **Nox Monitor** y pulsa **Iniciar** si el bot está detenido. En WhatsApp del teléfono entra en **Dispositivos vinculados** y escanea el QR del navegador que abre Nox. El perfil conserva la sesión al reiniciar mientras WhatsApp mantenga el vínculo.
 2. En **Modelos**, conecta **Ollama** o **LM Studio**, o añade tu clave de **OpenAI**, **Anthropic**, **Gemini**, **DeepSeek**, **OpenRouter** o de una API compatible con OpenAI. Busca los modelos que ofrece la conexión, prueba una respuesta y activa el perfil.
@@ -32,7 +32,7 @@ Los paquetes incluyen Node.js y Python. Nox usa un navegador compatible del equi
   </tr>
 </table>
 
-## Estado de v1.0.0
+## Estado de v1.0.1
 
 | Verificado | Pendiente |
 | --- | --- |

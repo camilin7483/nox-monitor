@@ -35,8 +35,6 @@ const LMSTUDIO_API_KEY = loadEnvVar('LMSTUDIO_API_KEY');
 // ── Browser provider (bundled chromium vs existing Chrome via CDP) ──
 const BROWSER_PROVIDER = loadEnvVar('BROWSER_PROVIDER') || loadNoxConfigValue('browser.provider', 'bundled');
 const BROWSER_CDP_ENDPOINT = loadEnvVar('BROWSER_CDP_ENDPOINT') || loadNoxConfigValue('browser.cdpEndpoint', 'http://127.0.0.1:9222');
-// ── Persona global (sheldon por defecto) ──
-const PERSONA = loadEnvVar('PERSONA') || loadNoxConfigValue('persona', 'sheldon');
 const personalizations = path.join(DATA_DIR, 'local-personalization.js');
 const SPECIAL_CHATS = !PACKAGED && fs.existsSync(personalizations) ? require(personalizations) : {};
 // ── Env loader (reads .env next to this file) ──
@@ -184,7 +182,6 @@ function writeMonitorBridge(genInfo = {}) {
         primary: Object.values(modelStats).at(-1)?.model || LMSTUDIO_MODEL,
         profiles: configuredModelStats(),
         fast: OLLAMA_MODEL_FAST,
-        persona: typeof PERSONA !== 'undefined' ? PERSONA : 'sheldon',
         browser: typeof BROWSER_PROVIDER !== 'undefined' ? BROWSER_PROVIDER : 'cdp',
         stats: {
           'lmstudio': (() => { const s = modelStats[LMSTUDIO_MODEL] || { tries: 0, success: 0, timeMs: [] }; return { tries: s.tries, success: s.success, avgMs: s.timeMs.length > 0 ? Math.round(s.timeMs.reduce((a,b) => a+b, 0) / s.timeMs.length) : 0 }; })(),
@@ -830,18 +827,13 @@ async function buildPrompt(chatName, incomingMsgs) {
 async function generateAIReply(chatName, context, incomingMsgs, isMedia, turns, settings, profile) {
   const { info, lang } = await buildPrompt(chatName, incomingMsgs);
   const recentReplies = recentRepliesByChat.get(chatName) || [];
-  const isSpecialChat = !!SPECIAL_CHATS[chatName];
 
   const topic = detectTopic(incomingMsgs);
   conversationTopics.set(chatName, topic);
 
   const configured = assistant.prepareContext(settings, incomingMsgs.slice(-5).join('\n'));
-  const isSheldon = !configured.systemPrompt && PERSONA.toLowerCase() === 'sheldon';
-  let systemMsg = configured.systemPrompt || assistant.personaPrompt(PERSONA);
+  let systemMsg = configured.systemPrompt || assistant.NOX_SYSTEM_PROMPT;
   if (configured.additional) systemMsg += '\n\n' + configured.additional;
-  if (isSpecialChat && isSheldon) {
-    systemMsg += `\nNunca uses el nombre del contacto como burla. Si está triste, apoya breve.`;
-  }
   if (recentReplies.length > 0)
     systemMsg += `\nNo repitas estas respuestas recientes: ${recentReplies.slice(-3).join(' | ')}`;
   if (info) systemMsg += `\n${info}`;
@@ -852,13 +844,9 @@ async function generateAIReply(chatName, context, incomingMsgs, isMedia, turns, 
       ? 'El contacto envió un archivo multimedia. Solo conoces el tipo de mensaje.'
       : incomingMsgs.slice(-5).join('\n');
   } else if (isMedia) {
-    finalText = isSheldon
-      ? `Acaba de enviar una foto/video/sticker. Reacciona con humor Sheldon en 1 oración. NUNCA digas que no puedes verlo.`
-      : `Acaba de enviar una foto/video/sticker. Reacciona de forma natural en 1 oración. NUNCA digas que no puedes verlo.`;
+    finalText = 'El contacto envió un archivo multimedia. Responde en una oración según el contexto disponible, sin inventar detalles del archivo.';
   } else {
-    finalText = isSheldon
-      ? `Mensajes nuevos:\n${incomingMsgs.slice(-5).map(m => `- ${m || '(vacio)'}`).join('\n')}\nRespóndelos como Sheldon en 1-2 oraciones.`
-      : `Mensajes nuevos:\n${incomingMsgs.slice(-5).map(m => `- ${m || '(vacio)'}`).join('\n')}\nRespóndelos de forma natural en 1-2 oraciones.`;
+    finalText = `Mensajes nuevos:\n${incomingMsgs.slice(-5).map(m => `- ${m || '(vacio)'}`).join('\n')}\nRespóndelos de forma natural en 1-2 oraciones.`;
   }
   if (!configured.systemPrompt) finalText += lang === 'en' ? `\nReply in English.` : `\nResponde en español.`;
 
