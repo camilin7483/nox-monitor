@@ -40,7 +40,8 @@ def launch():
     with file_lock(data / '.setup-lock'):
         config_path = data / 'nox-config.json'
         cfg = json.loads(config_path.read_text(encoding='utf-8')) if config_path.exists() else {}
-        if not cfg.get('api_token'):
+        token = cfg.get('api_token')
+        if not isinstance(token, str) or len(token.strip()) < 32:
             cfg.update(api_token=secrets.token_urlsafe(32))
             cfg.setdefault('browser', {'provider': 'bundled'})
             save_json(config_path, cfg)
