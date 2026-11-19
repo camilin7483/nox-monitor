@@ -16,18 +16,45 @@ const { spawn } = require('child_process');
 
 let port = PACKAGED ? 0 : 3456;
 const API_HOST = PACKAGED ? '127.0.0.1' : process.env.NOX_API_HOST || '127.0.0.1';
-// Token: prefer env, fallback to nox-config.json, then default (warn if default)
-let API_TOKEN = process.env.NOX_API_TOKEN || '';
-if (!API_TOKEN) {
+// Accept explicit credentials, otherwise use a private, persistent local token.
+const { randomBytes } = require('node:crypto');
+function validToken(value) {
+  return typeof value === 'string' && value.trim().length >= 32;
+}
+function resolveApiToken() {
+  const explicit = process.env.NOX_API_TOKEN;
+  if (validToken(explicit)) return explicit.trim();
   try {
     const cfg = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'nox-config.json'), 'utf8'));
-    API_TOKEN = cfg.api_token || '';
+    if (validToken(cfg.api_token)) return cfg.api_token.trim();
   } catch {}
-}
-if (!API_TOKEN) {
   if (PACKAGED) throw new Error('El perfil local de Nox todavía no está inicializado.');
-  API_TOKEN = 'nox-token';
+  const filename = path.join(DATA_DIR, '.nox-api-token');
+  try {
+    const existing = fs.readFileSync(filename, 'utf8').trim();
+    if (!validToken(existing)) throw new Error('Token local inválido. Elimina .nox-api-token con Nox detenido y reinicia.');
+    return existing;
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+  fs.mkdirSync(DATA_DIR, { recursive: true, mode: 0o700 });
+  const temporary = path.join(DATA_DIR, '.nox-api-token-' + randomBytes(16).toString('hex'));
+  try {
+    fs.writeFileSync(temporary, randomBytes(32).toString('base64url'), { mode: 0o600, flag: 'wx' });
+    try {
+      // Publish only a complete token, without overwriting another process's token.
+      fs.linkSync(temporary, filename);
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+    }
+  } finally {
+    fs.rmSync(temporary, { force: true });
+  }
+  const token = fs.readFileSync(filename, 'utf8').trim();
+  if (!validToken(token)) throw new Error('Token local inválido.');
+  return token;
 }
+const API_TOKEN = resolveApiToken();
 const DIR = DATA_DIR;
 const STATE_FILE = path.join(DIR, 'responder-state.json');
 const LOG_FILE = path.join(DIR, 'responder.log');
@@ -396,11 +423,7 @@ function startServer(opts = {}) {
     port = server.address().port;
     if (PACKAGED) atomicWriteJson(path.join(DATA_DIR, 'api-status.json'), { pid: process.pid, port });
     console.log(`[API] Nox REST server running on http://${API_HOST}:${port}`);
-    if (API_TOKEN === 'nox-token') {
-      console.log(`[API] WARNING: using default token, set NOX_API_TOKEN env var`);
-    } else {
-      console.log(`[API] Auth configured`);
-    }
+    console.log('[API] Auth configured');
   });
   return server;
 }

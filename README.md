@@ -48,6 +48,8 @@ El estado de vinculación, las claves configuradas y los datos de conversación 
 
 ## Desarrollo
 
+La API local requiere un token de al menos 32 caracteres. En desarrollo, si no configuras `NOX_API_TOKEN` ni `api_token` en `nox-config.json`, Nox genera un token aleatorio persistente en `.nox-api-token` (excluido de Git). Los clientes externos deben usar ese token; evita publicarlo. Las ediciones instalables generan su token en el perfil privado. Reinicia Nox al cambiar la credencial.
+
 En Linux instala Node.js 24, Python 3.13 con Tk, Bash, `jq` y `flock`. Desde la raíz del repositorio:
 
 ```bash

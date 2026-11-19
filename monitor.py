@@ -221,16 +221,22 @@ def write_nox_config(data):
     _atomic_write_json(CONFIG_FILE, data, mode=0o600)
 
 def _get_api_token():
-    tok = os.environ.get('NOX_API_TOKEN', '').strip()
-    if tok:
-        return tok
-    try:
-        cfg = read_nox_config()
-        if cfg.get('api_token'):
-            return str(cfg['api_token']).strip()
-    except (OSError, AttributeError):
-        pass
-    return 'nox-token'
+    def valid(value):
+        return isinstance(value, str) and len(value.strip()) >= 32
+    tok = os.environ.get('NOX_API_TOKEN', '')
+    if valid(tok):
+        return tok.strip()
+    cfg = read_nox_config()
+    if isinstance(cfg, dict) and valid(cfg.get('api_token')):
+        return cfg['api_token'].strip()
+    if not PACKAGED:
+        try:
+            tok = (DATA_DIR / '.nox-api-token').read_text(encoding='utf-8').strip()
+            if valid(tok):
+                return tok
+        except (OSError, UnicodeError):
+            pass
+    return ''
 
 def _sanitize_export_name(name: str) -> str:
     # Keep alnum, hyphen, underscore, limit 30 chars
@@ -1211,7 +1217,6 @@ class MonitorApp(AssistantPanels):
             'poll_ms': poll_ms,
             'model': _existing_cfg.get('model', 'qwen2.5:3b'),
             'model_fast': _existing_cfg.get('model_fast', 'qwen2.5:3b'),
-            'api_token': _existing_cfg.get('api_token', _get_api_token()),
             'llm': {
                 **_existing_cfg.get('llm', {}),
                 'provider': 'lmstudio',

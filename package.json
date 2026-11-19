@@ -7,8 +7,8 @@
     "stop": "bash stop.sh",
     "status": "bash status.sh",
     "logs": "tail -f responder.log",
-    "check": "node --check responder.js",
-    "test": "node --test assistant.test.js"
+    "check": "node --check responder.js && node --check api.js",
+    "test": "node --test assistant.test.js api-auth.test.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
