@@ -35,5 +35,7 @@ ai-status.json*
 browser-status.json*
 send-queue.json*
 local-personalization.js
+.nox-api-token
+.nox-api-token-*
 *.bak
 *.tmp
